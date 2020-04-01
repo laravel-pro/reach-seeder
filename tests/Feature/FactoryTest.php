@@ -27,18 +27,26 @@ class FactoryTest extends TestCase
         $this->loadMigrationsFrom(__DIR__.'/../Fixtures/migrations');
     }
 
-    public function test_factory_make_could_call_from_api()
+    /**
+     * @dataProvider urlsProvider
+     * @param string $url
+     */
+    public function test_it_could_call_from_api(string $url)
     {
-        $this->postJson('/reach-seeder/model/make', [
+        $this->postJson($url, [
             'model' => User::class,
         ])
             ->assertSuccessful()
             ->assertJsonStructure(self::ExpectUserStructure);
     }
 
-    public function test_factory_make_multi_model_when_pass_amount()
+    /**
+     * @dataProvider urlsProvider
+     * @param string $url
+     */
+    public function test_multi_model_created_when_pass_amount(string $url)
     {
-        $this->postJson('/reach-seeder/model/make', [
+        $this->postJson($url, [
             'model' => User::class,
             'amount' => 2,
         ])
@@ -46,15 +54,19 @@ class FactoryTest extends TestCase
             ->assertJsonStructure([self::ExpectUserStructure]);
     }
 
-    public function test_factory_make_throw_not_found_when_model_not_exists()
+    /**
+     * @dataProvider urlsProvider
+     * @param string $url
+     */
+    public function test_it_throw_not_found_when_model_not_exists(string $url)
     {
         $this->expectException(NotFoundHttpException::class);
-        $this->postJson('/reach-seeder/model/make', [
+        $this->postJson('$url', [
             'model' => 'App\User',
         ]);
     }
 
-    public function test_factory_create_should_seed_database_and_return()
+    public function test_it_should_seed_database_and_return()
     {
         $response = $this->postJson('/reach-seeder/model/create', [
             'model' => User::class,
@@ -70,22 +82,11 @@ class FactoryTest extends TestCase
         ]);
     }
 
-    public function test_factory_create_multi_model_when_pass_amount()
+    public function urlsProvider()
     {
-        $response = $this->postJson('/reach-seeder/model/create', [
-            'model' => User::class,
-            'amount' => 2,
-        ])
-            ->assertSuccessful()
-            ->assertJsonStructure([self::ExpectUserStructure]);
-
-        $data = $response->json();
-
-        foreach ($data as $user) {
-            $this->assertDatabaseHas('users', [
-                'id' => $user['id'],
-                'name' => $user['name'],
-            ]);
-        }
+        return [
+            '[MAKE]' => ['/reach-seeder/model/make'],
+            '[CREATE]' => ['/reach-seeder/model/create'],
+        ];
     }
 }
