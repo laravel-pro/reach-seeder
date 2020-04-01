@@ -27,7 +27,7 @@ class FactoryTest extends TestCase
         $this->loadMigrationsFrom(__DIR__.'/../Fixtures/migrations');
     }
 
-    public function test_factory_make_can_by_call_from_api()
+    public function test_factory_make_could_call_from_api()
     {
         $this->postJson('/reach-seeder/model/make', [
             'model' => User::class,
@@ -54,7 +54,7 @@ class FactoryTest extends TestCase
         ]);
     }
 
-    public function test_factory_create_seed_database_and_return()
+    public function test_factory_create_should_seed_database_and_return()
     {
         $response = $this->postJson('/reach-seeder/model/create', [
             'model' => User::class,
