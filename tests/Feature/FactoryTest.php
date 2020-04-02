@@ -27,66 +27,44 @@ class FactoryTest extends TestCase
         $this->loadMigrationsFrom(__DIR__.'/../Fixtures/migrations');
     }
 
-    /**
-     * @dataProvider urlsProvider
-     * @param string $url
-     */
-    public function test_it_could_call_from_api(string $url)
+    public function testCreatingModel()
     {
-        $this->postJson($url, [
-            'model' => User::class,
-        ])
+        $this->postJson('/reach-seeder/model/make', ['model' => User::class])
+            ->assertSuccessful()
+            ->assertJsonStructure(self::ExpectUserStructure);
+
+        $this->postJson('/reach-seeder/model/create', ['model' => User::class])
             ->assertSuccessful()
             ->assertJsonStructure(self::ExpectUserStructure);
     }
 
-    /**
-     * @dataProvider urlsProvider
-     * @param string $url
-     */
-    public function test_multi_model_created_when_pass_amount(string $url)
+    public function testCreatingCollectionOfModel()
     {
-        $this->postJson($url, [
-            'model' => User::class,
-            'amount' => 2,
-        ])
-            ->assertSuccessful()
+        $this->postJson('/reach-seeder/model/make', ['model' => User::class, 'amount' => 2])
+            ->assertJsonCount(2)
             ->assertJsonStructure([self::ExpectUserStructure]);
-    }
 
-    /**
-     * @dataProvider urlsProvider
-     * @param string $url
-     */
-    public function test_it_throw_not_found_when_model_not_exists(string $url)
-    {
-        $this->expectException(NotFoundHttpException::class);
-        $this->postJson('$url', [
-            'model' => 'App\User',
-        ]);
-    }
+        $response = $this->postJson('/reach-seeder/model/create', ['model' => User::class, 'amount' => 2])
+            ->assertJsonCount(2)
+            ->assertJsonStructure([self::ExpectUserStructure]);
 
-    public function test_it_should_seed_database_and_return()
-    {
-        $response = $this->postJson('/reach-seeder/model/create', [
-            'model' => User::class,
-        ])
-            ->assertSuccessful()
-            ->assertJsonStructure(self::ExpectUserStructure);
-
-        $data = $response->json();
+        $createdUsers = $response->json();
 
         $this->assertDatabaseHas('users', [
-            'id' => $data['id'],
-            'name' => $data['name'],
+            'id' => $createdUsers[0]['id'],
+            'name' => $createdUsers[0]['name'],
+        ]);
+        $this->assertDatabaseHas('users', [
+            'id' => $createdUsers[1]['id'],
+            'name' => $createdUsers[1]['name'],
         ]);
     }
 
-    public function urlsProvider()
+    public function testThrowingNotFoundWhenModelNotDefined()
     {
-        return [
-            '[MAKE]' => ['/reach-seeder/model/make'],
-            '[CREATE]' => ['/reach-seeder/model/create'],
-        ];
+        $this->expectException(NotFoundHttpException::class);
+        $this->postJson('/reach-seeder/model/make', ['model' => 'App\User']);
     }
+
+
 }
