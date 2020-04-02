@@ -66,5 +66,32 @@ class FactoryTest extends TestCase
         $this->postJson('/reach-seeder/model/make', ['model' => 'App\User']);
     }
 
+    public function testMakingModelOverridingAttributes()
+    {
+        $response = $this->postJson('/reach-seeder/model/make', [
+            'model' => User::class,
+            'attributes' => [
+                'name' => 'Mr. Strange',
+            ],
+        ]);
 
+        $createdUser = $response->json();
+
+        $this->assertEquals('Mr. Strange', $createdUser['name']);
+    }
+
+    public function testCreatingModelOverridingAttributes()
+    {
+        $response = $this->postJson('/reach-seeder/model/create', [
+            'model' => User::class,
+            'attributes' => [
+                'name' => 'Mr. Strange',
+            ],
+        ]);
+
+        $createdUser = $response->json();
+
+        $this->assertEquals('Mr. Strange', $createdUser['name']);
+        $this->assertDatabaseHas('users', ['name' => 'Mr. Strange']);
+    }
 }

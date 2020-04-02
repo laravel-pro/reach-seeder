@@ -33,11 +33,13 @@ class FactoryController extends Controller
 
     public function make(Request $request)
     {
-        return $this->builder($request)->make();
+        $attributes = $request->input('attributes', []);
+        return $this->builder($request)->make($attributes);
     }
 
     public function create(Request $request)
     {
-        return $this->builder($request)->create();
+        $attributes = $request->input('attributes', []);
+        return $this->builder($request)->create($attributes);
     }
 }
