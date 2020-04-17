@@ -29,22 +29,22 @@ class FactoryTest extends TestCase
 
     public function testCreatingModel()
     {
-        $this->postJson('/reach-seeder/model/make', ['model' => User::class])
+        $this->postJson(route('model.create'), ['model' => User::class])
             ->assertSuccessful()
             ->assertJsonStructure(self::ExpectUserStructure);
 
-        $this->postJson('/reach-seeder/model/create', ['model' => User::class])
+        $this->postJson(route('model.create'), ['model' => User::class])
             ->assertSuccessful()
             ->assertJsonStructure(self::ExpectUserStructure);
     }
 
     public function testCreatingCollectionOfModel()
     {
-        $this->postJson('/reach-seeder/model/make', ['model' => User::class, 'amount' => 2])
+        $this->postJson(route('model.make'), ['model' => User::class, 'amount' => 2])
             ->assertJsonCount(2)
             ->assertJsonStructure([self::ExpectUserStructure]);
 
-        $response = $this->postJson('/reach-seeder/model/create', ['model' => User::class, 'amount' => 2])
+        $response = $this->postJson(route('model.create'), ['model' => User::class, 'amount' => 2])
             ->assertJsonCount(2)
             ->assertJsonStructure([self::ExpectUserStructure]);
 
@@ -63,12 +63,12 @@ class FactoryTest extends TestCase
     public function testThrowingNotFoundWhenModelNotDefined()
     {
         $this->expectException(NotFoundHttpException::class);
-        $this->postJson('/reach-seeder/model/make', ['model' => 'App\User']);
+        $this->postJson(route('model.make'), ['model' => 'App\User']);
     }
 
     public function testMakingModelOverridingAttributes()
     {
-        $response = $this->postJson('/reach-seeder/model/make', [
+        $response = $this->postJson(route('model.make'), [
             'model' => User::class,
             'attributes' => [
                 'name' => 'Mr. Strange',
@@ -82,7 +82,7 @@ class FactoryTest extends TestCase
 
     public function testCreatingModelOverridingAttributes()
     {
-        $response = $this->postJson('/reach-seeder/model/create', [
+        $response = $this->postJson(route('model.create'), [
             'model' => User::class,
             'attributes' => [
                 'name' => 'Mr. Strange',
