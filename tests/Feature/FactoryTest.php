@@ -4,12 +4,15 @@
 namespace LaravelPro\ReachSeeder\Tests\Feature;
 
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use LaravelPro\ReachSeeder\Tests\Fixtures\User;
 use LaravelPro\ReachSeeder\Tests\TestCase;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class FactoryTest extends TestCase
 {
+    use RefreshDatabase;
+
     const ExpectUserStructure = [
         'name',
         'email',
