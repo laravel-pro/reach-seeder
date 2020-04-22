@@ -15,7 +15,7 @@ class ReachSeederServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        if (app()->isProduction()) {
+        if (!app()->runningInConsole() && app()->isProduction()) {
             throw new \RuntimeException('Reach Seeder is not allowed running in production');
         }
         $this->loadRoutesFrom(__DIR__.'/routes.php');
