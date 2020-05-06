@@ -7,6 +7,4 @@ Route::prefix('api/reach-seeder')->group(function () {
     Route::post('model/make', 'LaravelPro\ReachSeeder\FactoryController@make')->name('model.make');
 
     Route::post('migrate/refresh', 'LaravelPro\ReachSeeder\MigrationController@refresh')->name('migrate.refresh');
-
-    Route::post('login', 'LaravelPro\ReachSeeder\AuthController@login');
 });
